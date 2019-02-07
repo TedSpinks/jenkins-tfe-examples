@@ -3,7 +3,7 @@ def repoSshUrl = "git@github.com:TedSpinks/ws-aws-ex1.git"   //Must be ssh since
 def tfCodeId = "example-${env.BUILD_NUMBER}"        //Unique name to use in the TF code filename and resource
 def tfCodeFilePath = "${repoName}/${tfCodeId}.tf"   //Path and filename of the new TF code file
 //Credentials
-def gitCredentials = 'github-jenkins-aws-example'   //Credential ID in Jenkins of your GitHub Credentials
+def gitCredentials = 'github-ssh'                   //Credential ID in Jenkins of your GitHub SSH Credentials
 def tfeCredentials = 'ptfe'                         //Credential ID in Jenkins of your Terraform Enterprise Credentials
 
 pipeline {
