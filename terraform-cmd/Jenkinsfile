@@ -76,10 +76,11 @@ pipeline {
         sshagent (credentials: [gitCredentials]) {
           sh """
               cd ${repoName}
-              git pull  #get any changes 
+              git pull  #get any Workspace changes since Stage 1 (from other pipeline builds, etc)  
               git rm ${tfCodeId}.tf
               git commit -m 'Cleaned up test EC2 instances for build ${env.BUILD_NUMBER} of Jenkins job "${env.JOB_NAME}"'
               git push origin master
+              terraform apply
           """
         }
       }
