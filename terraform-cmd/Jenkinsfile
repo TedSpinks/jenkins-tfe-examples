@@ -38,7 +38,7 @@ pipeline {
           sh """
               cd ${repoName}
               git add *.tf
-              git commit -m 'New EC2 instance(s) for Jenkins job "${env.JOB_NAME}", build ${env.BUILD_NUMBER}'
+              git commit -m 'New EC2 instance(s) for build ${env.BUILD_NUMBER} of Jenkins job "${env.JOB_NAME}"'
               git push origin master
           """
         }
@@ -57,10 +57,30 @@ pipeline {
         */
         withCredentials([usernamePassword(credentialsId: tfeCredentials, usernameVariable: 'USER', passwordVariable: 'TOKEN')]) {
           sh '''
-            cd $REPO_NAME
+            cd $REPO_NAME       #This gets cleared in Stage 1, which is required for terraform init to run properly
             terraform init -backend-config="token=$TOKEN"  #Uses config.tf and the user API token to connect to TFE
             terraform apply
           '''
+        }
+      }
+    }
+
+    stage('3. Do integration or deployment testing'){
+      steps {
+        echo "Do whatever integration or deployment testing you need to do..."
+      }
+    }
+
+    stage('4. Destroy the test instances'){
+      steps {
+        sshagent (credentials: [gitCredentials]) {
+          sh """
+              cd ${repoName}
+              git pull  #get any changes 
+              git rm ${tfCodeId}.tf
+              git commit -m 'Cleaned up test EC2 instances for build ${env.BUILD_NUMBER} of Jenkins job "${env.JOB_NAME}"'
+              git push origin master
+          """
         }
       }
     }
