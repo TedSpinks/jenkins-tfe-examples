@@ -71,7 +71,7 @@ pipeline {
       }
     }
 
-    stage('4. Destroy the test instances'){
+    stage('4. Cleanup (destroy) the test machines'){
       steps {
         sshagent (credentials: [gitCredentials]) {
           sh """
